@@ -35,7 +35,7 @@ const formattedDate = `${monthName} ${day}, ${year}`;
 
 // will get the weather data api url based on the zip code
 const getZip = async (zipCode, units) => {
-    return fetch(`http://api.openweathermap.org/geo/1.0/zip?zip=${zipCode},US&appid=${apiKey}`)
+    return fetch(`https://api.openweathermap.org/geo/1.0/zip?zip=${zipCode},US&appid=${apiKey}`)
     .then(response => response.json())
     .then(json => fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${json.lat}&lon=${json.lon}&units=${units}&appid=${apiKey}`));
 }
@@ -94,4 +94,3 @@ const updateClock = () => {
 
 updateClock();
 setInterval(updateClock, 1000);
-
