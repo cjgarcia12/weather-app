@@ -9,6 +9,8 @@ const body = document.getElementById('body');
 const weatherIcon = document.getElementById('icon');
 const zipCity = document.getElementById('city');
 const date = document.getElementById('date')
+const now = new Date();
+
 // Create a new Date object representing the current date and time
 const currentDate = new Date();
 
@@ -45,12 +47,13 @@ const displayWeather = (units) => {
     getZip(document.getElementById('search-box').value, units)
     .then(response => response.json())
     .then(json => {
+        let nightTimeStamp = json.sys.sunset;
+        let nightTime = new Date(nightTimeStamp * 1000);
         let description = json.weather[0].description;
         let temp = json.main.temp;
         let windKnots = json.wind.speed;
         let humidityPerc = json.main.humidity;
         let weatherID = json.weather[0].id;
-
 
         humidity.innerHTML = `${humidityPerc}%`;
         weatherDescription.innerHTML = description;
@@ -59,7 +62,7 @@ const displayWeather = (units) => {
 
         if (units === imperial) {
             tempature.innerHTML = `${Math.round(temp)}°F`;
-            windSpeed.innerHTML = `${Math.round(windKnots * 1.15)}mph`
+            windSpeed.innerHTML = `${Math.round(windKnots * 1.15)}mph`;
         } else if (units === metric){
             tempature.innerHTML = `${Math.round(temp)}°C`;
             windSpeed.innerHTML = `${Math.round(windKnots * 1.852)}km/h`;
@@ -68,13 +71,24 @@ const displayWeather = (units) => {
         //if it rains
         if((/^[235][0-9][0-9]/.test(weatherID))) {
             weatherIcon.innerHTML = `<img src="images/precipitation.png" class="img" alt="..." style="width: 100px;">`;
-            body.style.backgroundImage = 'url(images/rainyday.gif';
+            body.style.backgroundImage = 'url(images/rainyday.gif)';
 
         } 
         // if it doesnt rain
-        else if ((/^8[0-9][0-9]/.test(weatherID))) {
+        else if ((/^8[0-9][0-9]/.test(weatherID)) && (now < nightTime)) {
             weatherIcon.innerHTML = `<img src="images/cloudy.png" class="img" alt="..." style="width: 100px;">`;
             body.style.backgroundImage = 'url(images/daycloud.gif)';
+
+        }
+        // if it is night clear
+        else if ((now >= nightTime) && ((/^8[0-9][0-9]/.test(weatherID)))) {
+            weatherIcon.innerHTML = `<img src="images/night.png" class="img" alt="..." style="width: 100px;">`;
+            body.style.backgroundImage = 'url(images/nighttime.gif)';
+        }
+        // if it snows and day
+        else if ((now < nightTime) && ((/^6[0-9][0-9]/.test(weatherID)))) {
+            weatherIcon.innerHTML = `<img src="images/snowflake.png" class="img" alt="..." style="width: 100px;">`;
+            body.style.backgroundImage = 'url(images/pixel-snow-art.gif)';
         }
     });
 }
